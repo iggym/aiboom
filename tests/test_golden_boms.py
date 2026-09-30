@@ -69,11 +69,14 @@ _GIT_KEYS = {"aibom:git_commit", "aibom:git_branch", "aibom:git_remote", "aibom:
 
 def _strip_git(bom: dict) -> None:
     component = bom.get("metadata", {}).get("component", {})
-    if component.get("version", "").startswith("g"):
-        component["version"] = "<git>"
     props = component.get("properties")
-    if isinstance(props, list):
-        component["properties"] = [p for p in props if p.get("name") not in _GIT_KEYS]
+    if not isinstance(props, list):
+        return
+    names = {p.get("name") for p in props}
+    if "aibom:git_commit" in names:
+        # The version is derived from `git describe`, which differs per checkout.
+        component["version"] = "<git>"
+    component["properties"] = [p for p in props if p.get("name") not in _GIT_KEYS]
 
 
 @pytest.mark.parametrize("name", CASES)

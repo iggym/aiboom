@@ -35,7 +35,7 @@
       "type": "application",
       "bom-ref": "app:rag-service",
       "name": "rag-service",
-      "version": "2.0.1",
+      "version": "<git>",
       "description": "Retrieval-augmented question answering over internal policy documents.",
       "authors": [
         {
