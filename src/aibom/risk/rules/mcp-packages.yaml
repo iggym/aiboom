@@ -1,0 +1,309 @@
+# Curated MCP server package registry.
+#
+# Data-only contributions welcome: add an entry, run `pytest tests/test_rules.py`,
+# open a PR. Each entry records what a known MCP server package actually does, so
+# the classifier does not have to guess from a name like `server-filesystem`.
+#
+# `packages` entries are matched against an MCP server's package name (npm or
+# PyPI) and its command/args. `name_patterns` match the configured server name.
+# An entry sets the *floor* for capabilities and risk: regex rules may add more
+# capabilities, never fewer, and a manifest override may change either.
+
+registry_version: "2026.09.1"
+
+packages:
+  # --- reference servers shipped by the MCP project ---------------------------
+  - package: "@modelcontextprotocol/server-filesystem"
+    aliases: ["mcp-server-filesystem"]
+    capabilities: [filesystem, read, write]
+    risk: medium
+    why: Reads and writes arbitrary paths the process can reach.
+  - package: "@modelcontextprotocol/server-github"
+    aliases: ["mcp-server-github"]
+    capabilities: [write, identity, read, network]
+    risk: high
+    why: Can create issues, comments, branches and PRs with the caller's token.
+  - package: "@modelcontextprotocol/server-gitlab"
+    capabilities: [write, identity, read, network]
+    risk: high
+    why: Repository write access with the caller's token.
+  - package: "@modelcontextprotocol/server-git"
+    capabilities: [read, write, filesystem]
+    risk: medium
+    why: Local repository manipulation; can rewrite history.
+  - package: "@modelcontextprotocol/server-postgres"
+    aliases: ["mcp-server-postgres"]
+    capabilities: [read, write, destructive, secrets]
+    risk: high
+    why: Arbitrary SQL against a live database, including DDL.
+  - package: "@modelcontextprotocol/server-sqlite"
+    aliases: ["mcp-server-sqlite"]
+    capabilities: [read, write, destructive, filesystem]
+    risk: high
+    why: Arbitrary SQL against a local database file.
+  - package: "@modelcontextprotocol/server-slack"
+    aliases: ["mcp-server-slack"]
+    capabilities: [external-comms, read, write, identity]
+    risk: high
+    why: Reads channels and posts as the workspace's bot identity.
+  - package: "@modelcontextprotocol/server-google-maps"
+    capabilities: [network, read]
+    risk: low
+    why: Read-only geocoding and routing lookups.
+  - package: "@modelcontextprotocol/server-memory"
+    aliases: ["mcp-server-memory"]
+    capabilities: [read, write, filesystem]
+    risk: medium
+    why: Persistent knowledge-graph store written to disk.
+  - package: "@modelcontextprotocol/server-sequential-thinking"
+    capabilities: [read]
+    risk: low
+    why: Local reasoning scratchpad; no external effects.
+  - package: "@modelcontextprotocol/server-everything"
+    capabilities: [unknown]
+    risk: unknown
+    why: Test server exercising every primitive; treat as opaque.
+  - package: "@modelcontextprotocol/server-puppeteer"
+    capabilities: [network, code-exec, filesystem]
+    risk: high
+    why: Drives a real browser; can execute page scripts and read the DOM.
+  - package: "@modelcontextprotocol/server-brave-search"
+    capabilities: [network, read]
+    risk: low
+    why: Read-only web search via an API key.
+  - package: "@modelcontextprotocol/server-fetch"
+    capabilities: [network, read, filesystem]
+    risk: medium
+    why: Fetches arbitrary URLs, including localhost and link-local addresses.
+  - package: "@modelcontextprotocol/server-time"
+    capabilities: [read]
+    risk: low
+    why: Timezone and clock lookups only.
+  - package: "@modelcontextprotocol/server-sentry"
+    capabilities: [read, network]
+    risk: low
+    why: Read-only access to error events.
+  - package: "@modelcontextprotocol/server-aws-kb-retrieval"
+    capabilities: [read, network]
+    risk: low
+    why: Read-only Bedrock knowledge-base retrieval.
+  - package: "@modelcontextprotocol/server-gdrive"
+    capabilities: [read, filesystem, network]
+    risk: medium
+    why: Reads the whole Drive corpus the token can see.
+  - package: "@modelcontextprotocol/server-redis"
+    capabilities: [read, write, destructive, network]
+    risk: high
+    why: Arbitrary key mutation, including FLUSHALL.
+  - package: "@modelcontextprotocol/server-kubernetes"
+    capabilities: [write, identity, code-exec, destructive]
+    risk: high
+    why: Cluster control plane access; can exec into pods and delete workloads.
+
+  # --- widely deployed third-party servers ------------------------------------
+  - package: "@modelcontextprotocol/server-github-actions"
+    capabilities: [write, identity, code-exec]
+    risk: high
+    why: Can trigger and cancel workflows, which is a code-execution path.
+  - package: "@modelcontextprotocol/server-stripe"
+    capabilities: [financial, read, identity]
+    risk: high
+    why: Payment and refund operations against a live account.
+  - package: "@modelcontextprotocol/server-jira"
+    capabilities: [write, read, identity]
+    risk: medium
+    why: Issue and project mutation with the caller's token.
+  - package: "@modelcontextprotocol/server-confluence"
+    capabilities: [write, read, identity]
+    risk: medium
+    why: Space and page mutation.
+  - package: "@modelcontextprotocol/server-notion"
+    aliases: ["@notionhq/notion-mcp-server"]
+    capabilities: [write, read, identity]
+    risk: medium
+    why: Reads and writes the workspace knowledge base.
+  - package: "@modelcontextprotocol/server-linear"
+    capabilities: [write, read, identity]
+    risk: medium
+    why: Issue tracker mutation.
+  - package: "@modelcontextprotocol/server-snowflake"
+    capabilities: [read, secrets, network]
+    risk: high
+    why: Warehouse queries with a privileged credential.
+  - package: "@modelcontextprotocol/server-bigquery"
+    capabilities: [read, secrets, network]
+    risk: medium
+    why: Read-only warehouse access with a service account.
+  - package: "@modelcontextprotocol/server-duckdb"
+    capabilities: [read, filesystem]
+    risk: medium
+    why: Local analytical queries over arbitrary files.
+  - package: "@modelcontextprotocol/server-docker"
+    capabilities: [code-exec, destructive, identity]
+    risk: high
+    why: Container control is equivalent to root on the host.
+  - package: "@modelcontextprotocol/server-ssh"
+    capabilities: [code-exec, identity, network]
+    risk: high
+    why: Remote shell over SSH.
+  - package: "@modelcontextprotocol/server-terraform"
+    capabilities: [code-exec, destructive, identity]
+    risk: high
+    why: Applies infrastructure changes; can destroy resources.
+  - package: "@modelcontextprotocol/server-shell"
+    aliases: ["mcp-server-shell", "@modelcontextprotocol/server-command"]
+    capabilities: [code-exec, filesystem, destructive]
+    risk: high
+    why: Direct shell execution.
+  - package: "@modelcontextprotocol/server-python"
+    capabilities: [code-exec, filesystem]
+    risk: high
+    why: Executes arbitrary Python in the host environment.
+  - package: "@modelcontextprotocol/server-jupyter"
+    capabilities: [code-exec, filesystem, network]
+    risk: high
+    why: Executes notebook cells against a live kernel.
+  - package: "@modelcontextprotocol/server-playwright"
+    capabilities: [network, code-exec, filesystem]
+    risk: high
+    why: Browser automation with script execution.
+  - package: "@modelcontextprotocol/server-chrome-devtools"
+    capabilities: [network, code-exec, secrets]
+    risk: high
+    why: DevTools protocol access to a live browser profile, including cookies.
+  - package: "@modelcontextprotocol/server-screenshot"
+    capabilities: [filesystem, network, read]
+    risk: medium
+    why: Captures the screen, which may include sensitive windows.
+  - package: "@modelcontextprotocol/server-obsidian"
+    capabilities: [filesystem, read, write]
+    risk: medium
+    why: Reads and writes a local notes vault.
+  - package: "@modelcontextprotocol/server-grafana"
+    capabilities: [read, network, identity]
+    risk: medium
+    why: Dashboard and datasource queries with a service token.
+  - package: "@modelcontextprotocol/server-prometheus"
+    capabilities: [read, network]
+    risk: low
+    why: Read-only metrics queries.
+  - package: "@modelcontextprotocol/server-elasticsearch"
+    capabilities: [read, write, destructive, network]
+    risk: high
+    why: Index mutation and deletion.
+  - package: "@modelcontextprotocol/server-mongodb"
+    capabilities: [read, write, destructive, network]
+    risk: high
+    why: Document mutation and collection drops.
+  - package: "@modelcontextprotocol/server-mysql"
+    capabilities: [read, write, destructive, secrets]
+    risk: high
+    why: Arbitrary SQL against a live database.
+  - package: "@modelcontextprotocol/server-clickhouse"
+    capabilities: [read, destructive, network]
+    risk: medium
+    why: Analytical queries, including table drops.
+  - package: "@modelcontextprotocol/server-cloudflare"
+    capabilities: [write, identity, network]
+    risk: high
+    why: Edge configuration changes affect every request.
+  - package: "@modelcontextprotocol/server-vercel"
+    capabilities: [write, identity, network, code-exec]
+    risk: high
+    why: Deployment control; can ship code to production.
+  - package: "@modelcontextprotocol/server-supabase"
+    capabilities: [read, write, destructive, secrets]
+    risk: high
+    why: Database and auth administration with a service key.
+  - package: "@modelcontextprotocol/server-firebase"
+    capabilities: [read, write, destructive, secrets]
+    risk: high
+    why: Database and auth administration with a service key.
+  - package: "@modelcontextprotocol/server-twilio"
+    capabilities: [external-comms, financial, identity]
+    risk: high
+    why: Sends SMS and voice calls at real cost.
+  - package: "@modelcontextprotocol/server-sendgrid"
+    capabilities: [external-comms, read]
+    risk: medium
+    why: Sends email on behalf of the organisation.
+  - package: "@modelcontextprotocol/server-discord"
+    capabilities: [external-comms, write, identity]
+    risk: medium
+    why: Posts and moderates in a live community.
+  - package: "@modelcontextprotocol/server-telegram"
+    capabilities: [external-comms, write, identity]
+    risk: medium
+    why: Posts and reads messages as the bot.
+  - package: "@modelcontextprotocol/server-microsoft-graph"
+    capabilities: [identity, read, write, external-comms]
+    risk: high
+    why: Tenant-wide directory and mail access.
+  - package: "@modelcontextprotocol/server-google-workspace"
+    capabilities: [identity, read, write, external-comms]
+    risk: high
+    why: Mail, calendar and Drive access for a whole domain.
+  - package: "@modelcontextprotocol/server-salesforce"
+    capabilities: [read, write, financial, identity]
+    risk: high
+    why: CRM mutation including customer and contract data.
+  - package: "@modelcontextprotocol/server-hubspot"
+    capabilities: [read, write, identity]
+    risk: medium
+    why: CRM contact and deal mutation.
+  - package: "@modelcontextprotocol/server-sentry-issues"
+    capabilities: [read, write, network]
+    risk: medium
+    why: Can resolve and assign issues in addition to reading.
+  - package: "@modelcontextprotocol/server-timezone"
+    capabilities: [read]
+    risk: low
+    why: Timezone lookups only.
+
+# Servers that are configured by name without a package (e.g. a bespoke
+# in-repo stdio server). Matching is case-insensitive on the configured name.
+name_patterns:
+  - pattern: '\b(fs|files|filesystem|file system)\b'
+    capabilities: [filesystem, read, write]
+    risk: medium
+    why: Name indicates a filesystem server.
+  - pattern: '\b(shell|bash|terminal|exec|command)\b'
+    capabilities: [code-exec, destructive]
+    risk: high
+    why: Name indicates command execution.
+  - pattern: '\b(db|database|sql|postgres|mysql|sqlite|mongo|redis)\b'
+    capabilities: [read, write, destructive, secrets]
+    risk: high
+    why: Name indicates direct database access.
+  - pattern: '\b(gh|github|gitlab|git|repo)\b'
+    capabilities: [write, identity, read]
+    risk: high
+    why: Name indicates source-control write access.
+  - pattern: '\b(slack|discord|teams|telegram|chat)\b'
+    capabilities: [external-comms, write, identity]
+    risk: medium
+    why: Name indicates a chat integration.
+  - pattern: '\b(mail|email|smtp|gmail|outlook)\b'
+    capabilities: [external-comms, read, write]
+    risk: medium
+    why: Name indicates mail access.
+  - pattern: '\b(browser|puppeteer|playwright|chrome|selenium)\b'
+    capabilities: [network, code-exec]
+    risk: high
+    why: Name indicates browser automation.
+  - pattern: '\b(search|fetch|http|web)\b'
+    capabilities: [network, read]
+    risk: low
+    why: Name indicates network retrieval.
+  - pattern: '\b(memory|notes|kb|knowledge)\b'
+    capabilities: [read, write]
+    risk: low
+    why: Name indicates a local knowledge store.
+  - pattern: '\b(payment|stripe|billing|invoice)\b'
+    capabilities: [financial, read]
+    risk: high
+    why: Name indicates payment handling.
+  - pattern: '\b(k8s|kubernetes|docker|container|terraform)\b'
+    capabilities: [code-exec, destructive, identity]
+    risk: high
+    why: Name indicates infrastructure control.

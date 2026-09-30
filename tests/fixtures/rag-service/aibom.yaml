@@ -1,0 +1,54 @@
+schema: 1
+
+system:
+  name: rag-service
+  version: 2.0.1
+  description: Retrieval-augmented question answering over internal policy documents.
+  owner: knowledge-platform@example.com
+  purpose: Answer employee questions about internal policy with citations.
+  deployment: internal
+  data_classification: internal
+  jurisdictions: [EU]
+  risk_classification:
+    framework: ISO/IEC 42001
+    label: internal-tooling
+    rationale: Internal users only; answers are advisory and always cite sources.
+
+models:
+  claude-3-5-sonnet:
+    purpose: Grounded answer generation with citations.
+    kind: foundation
+    provider: anthropic
+    hosting_region: eu
+    data_processing_agreement: true
+    training_data_optout: true
+    license: proprietary
+    evals:
+      - {name: Citation Faithfulness, url: https://evals.example.com/cite, score: 0.95}
+  bge-m3:
+    purpose: Multilingual embedding for the policy index.
+    kind: embedding
+    task: text-embedding
+    provider: huggingface
+    license: Apache-2.0
+    hosting_region: eu
+    data_processing_agreement: true
+
+tools:
+  search_policies:
+    risk: low
+    reversible: true
+    rate_limited: true
+    justification: Read-only search over a public corpus inside the VPC.
+
+datasets:
+  - name: policy-corpus
+    version: "2026.08"
+    classification: internal
+    sensitive_data: []
+    pii: false
+    retention: 7 years
+    jurisdiction: EU
+    owners: [knowledge-platform]
+    source: s3://internal-policy-docs
+    refresh: weekly

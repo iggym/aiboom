@@ -1,0 +1,103 @@
+schema: 1
+
+system:
+  name: support-agent
+  version: git
+  description: Customer support assistant that drafts and sends replies.
+  owner: platform-ai@example.com
+  contacts:
+    - {name: Ada Lovelace, email: ada@example.com, role: accountable}
+    - {name: Grace Hopper, email: grace@example.com, role: responsible}
+  purpose: Draft replies to inbound support tickets and summarise threads.
+  deployment: customer-facing
+  risk_classification:
+    framework: EU AI Act
+    label: limited
+    rationale: Interacts with end users; no safety component, no biometrics.
+  human_oversight: Agents approve every outbound reply before sending.
+  data_classification: customer-pii
+  jurisdictions: [US, EU]
+  complete:
+    datasets: true
+    external_services: true
+
+models:
+  gpt-4.1:
+    purpose: Drafting replies and summarising ticket threads.
+    kind: foundation
+    task: text-generation
+    architecture_family: transformer
+    use_cases: [Support reply drafting, Thread summarisation]
+    technical_limitations: [May hallucinate policy details; verify against docs]
+    ethical_considerations:
+      - {name: Bias in tone across locales, mitigation_strategy: Locale-specific review}
+    provider: openai
+    provider_docs: https://platform.openai.com/docs/models/gpt-4.1
+    hosting_region: us
+    data_processing_agreement: true
+    training_data_optout: true
+    license: proprietary
+    context_window: 1047576
+    price_in_per_1m: 2.00
+    price_out_per_1m: 8.00
+    evals:
+      - {name: Support Reply Quality, url: https://evals.example.com/reply-q, score: 0.91}
+  text-embedding-3-small:
+    purpose: Embedding ticket history for retrieval.
+    kind: embedding
+    provider: openai
+    hosting_region: us
+    data_processing_agreement: true
+    license: proprietary
+  gpt-4.1-2024-08-06:
+    purpose: Legacy pinned model still used by the escalation path.
+    kind: foundation
+    provider: openai
+    retirement: "2026-02-01"
+    data_processing_agreement: true
+    license: proprietary
+
+tools:
+  issue_refund:
+    risk: high
+    human_in_the_loop: true
+    reversible: false
+    rate_limited: true
+    justification: Money movement; requires an approver and is capped per day.
+  lookup_ticket:
+    risk: low
+    reversible: true
+    justification: Read-only lookup against the ticketing API.
+
+mcp_servers:
+  crm:
+    risk: medium
+    justification: Read-only token scoped to the support account.
+
+datasets:
+  - name: ticket-history
+    version: rolling
+    classification: confidential
+    sensitive_data: [email, name, order_id]
+    pii: true
+    consent_basis: contract
+    retention: 24 months
+    jurisdiction: US
+    owners: [support-platform]
+    source: https://warehouse.example.com/tables/tickets
+    refresh: daily
+
+retrieval_sources:
+  - name: help-center-index
+    kind: vector-store
+    classification: public
+    pii: false
+    refresh: on-commit
+    description: Embedded help-centre articles used for retrieval augmentation.
+
+external_services:
+  - name: Eleven Labs TTS
+    provider: elevenlabs
+    purpose: voice
+    data_shared: [transcripts]
+    dpa: true

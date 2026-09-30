@@ -1,0 +1,1205 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "version": 1,
+  "metadata": {
+    "lifecycles": [
+      {
+        "phase": "build"
+      }
+    ],
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "bom-ref": "tool:aibom@0.1.0",
+          "name": "aibom",
+          "version": "0.1.0",
+          "supplier": {
+            "name": "modelsurface"
+          },
+          "externalReferences": [
+            {
+              "type": "vcs",
+              "url": "https://github.com/modelsurface/aibom"
+            },
+            {
+              "type": "website",
+              "url": "https://modelsurface.github.io/aibom/"
+            }
+          ]
+        }
+      ]
+    },
+    "component": {
+      "type": "application",
+      "bom-ref": "app:support-agent",
+      "name": "support-agent",
+      "version": "e26f46b-dirty",
+      "description": "Customer support assistant that drafts and sends replies.",
+      "authors": [
+        {
+          "name": "platform-ai@example.com"
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:purpose",
+          "value": "Draft replies to inbound support tickets and summarise threads."
+        },
+        {
+          "name": "aibom:deployment",
+          "value": "customer-facing"
+        },
+        {
+          "name": "aibom:data_classification",
+          "value": "customer-pii"
+        },
+        {
+          "name": "aibom:jurisdictions",
+          "value": "US, EU"
+        },
+        {
+          "name": "aibom:risk_framework",
+          "value": "EU AI Act"
+        },
+        {
+          "name": "aibom:risk_label",
+          "value": "limited"
+        },
+        {
+          "name": "aibom:risk_rationale",
+          "value": "Interacts with end users; no safety component, no biometrics."
+        },
+        {
+          "name": "aibom:human_oversight",
+          "value": "Agents approve every outbound reply before sending."
+        },
+        {
+          "name": "aibom:owner",
+          "value": "platform-ai@example.com"
+        },
+        {
+          "name": "aibom:rules_version",
+          "value": "2026.09.1"
+        },
+        {
+          "name": "aibom:ai_schema_version",
+          "value": "1.0"
+        },
+        {
+          "name": "aibom:generator",
+          "value": "aibom 0.1.0"
+        },
+        {
+          "name": "aibom:scanner",
+          "value": "bundled"
+        },
+        {
+          "name": "aibom:lock",
+          "value": "/workspace/project/aiboom/tests/fixtures/support-agent/surface.lock"
+        },
+        {
+          "name": "aibom:lock_generated",
+          "value": "true"
+        },
+        {
+          "name": "aibom:lock_fresh",
+          "value": "true"
+        },
+        {
+          "name": "aibom:manifest",
+          "value": "/workspace/project/aiboom/tests/fixtures/support-agent/aibom.yaml"
+        },
+        {
+          "name": "aibom:review_errors",
+          "value": "2"
+        },
+        {
+          "name": "aibom:review_warnings",
+          "value": "3"
+        }
+      ]
+    },
+    "authors": [
+      {
+        "name": "Ada Lovelace",
+        "email": "ada@example.com"
+      },
+      {
+        "name": "Grace Hopper",
+        "email": "grace@example.com"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "model:gpt-4.1-2024-08-06",
+      "name": "gpt-4.1-2024-08-06",
+      "version": "2024-08-06",
+      "supplier": {
+        "name": "openai"
+      },
+      "group": "openai",
+      "description": "Legacy pinned model still used by the escalation path.",
+      "modelCard": {
+        "modelParameters": {
+          "modelArchitecture": "foundation"
+        }
+      },
+      "externalReferences": [
+        {
+          "type": "documentation",
+          "url": "https://platform.openai.com/docs/models"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "proprietary"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:alias",
+          "value": "gpt-4.1-2024-08-06"
+        },
+        {
+          "name": "aibom:resolved",
+          "value": "true"
+        },
+        {
+          "name": "aibom:floating",
+          "value": "false"
+        },
+        {
+          "name": "aibom:kind",
+          "value": "foundation"
+        },
+        {
+          "name": "aibom:provider",
+          "value": "openai"
+        },
+        {
+          "name": "aibom:locations",
+          "value": "src/agent.py:20"
+        },
+        {
+          "name": "aibom:retirement",
+          "value": "2026-02-01"
+        },
+        {
+          "name": "aibom:data_processing_agreement",
+          "value": "true"
+        },
+        {
+          "name": "aibom:purpose",
+          "value": "Legacy pinned model still used by the escalation path."
+        }
+      ]
+    },
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "model:gpt-4.1",
+      "name": "gpt-4.1",
+      "supplier": {
+        "name": "openai"
+      },
+      "group": "openai",
+      "description": "Drafting replies and summarising ticket threads.",
+      "modelCard": {
+        "modelParameters": {
+          "task": "text-generation",
+          "architectureFamily": "transformer",
+          "modelArchitecture": "foundation"
+        },
+        "considerations": {
+          "useCases": [
+            "Support reply drafting",
+            "Thread summarisation"
+          ],
+          "technicalLimitations": [
+            "May hallucinate policy details; verify against docs"
+          ],
+          "ethicalConsiderations": [
+            {
+              "name": "Bias in tone across locales",
+              "mitigationStrategy": "Locale-specific review"
+            }
+          ]
+        },
+        "quantitativeAnalysis": {
+          "performanceMetrics": [
+            {
+              "type": "Support Reply Quality",
+              "value": "0.91"
+            }
+          ]
+        }
+      },
+      "externalReferences": [
+        {
+          "type": "documentation",
+          "url": "https://platform.openai.com/docs/models/gpt-4.1"
+        },
+        {
+          "type": "documentation",
+          "url": "https://evals.example.com/reply-q"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "proprietary"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:alias",
+          "value": "gpt-4.1"
+        },
+        {
+          "name": "aibom:resolved",
+          "value": "false"
+        },
+        {
+          "name": "aibom:floating",
+          "value": "true"
+        },
+        {
+          "name": "aibom:kind",
+          "value": "foundation"
+        },
+        {
+          "name": "aibom:provider",
+          "value": "openai"
+        },
+        {
+          "name": "aibom:locations",
+          "value": "src/agent.py:19"
+        },
+        {
+          "name": "aibom:price_in_per_1m",
+          "value": "2.0"
+        },
+        {
+          "name": "aibom:price_out_per_1m",
+          "value": "8.0"
+        },
+        {
+          "name": "aibom:context_window",
+          "value": "1047576"
+        },
+        {
+          "name": "aibom:hosting_region",
+          "value": "us"
+        },
+        {
+          "name": "aibom:data_processing_agreement",
+          "value": "true"
+        },
+        {
+          "name": "aibom:training_data_optout",
+          "value": "true"
+        },
+        {
+          "name": "aibom:purpose",
+          "value": "Drafting replies and summarising ticket threads."
+        }
+      ]
+    },
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "model:text-embedding-3-small",
+      "name": "text-embedding-3-small",
+      "supplier": {
+        "name": "openai"
+      },
+      "group": "openai",
+      "description": "Embedding ticket history for retrieval.",
+      "modelCard": {
+        "modelParameters": {
+          "modelArchitecture": "embedding"
+        }
+      },
+      "externalReferences": [
+        {
+          "type": "documentation",
+          "url": "https://platform.openai.com/docs/models"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "proprietary"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:alias",
+          "value": "text-embedding-3-small"
+        },
+        {
+          "name": "aibom:resolved",
+          "value": "false"
+        },
+        {
+          "name": "aibom:floating",
+          "value": "true"
+        },
+        {
+          "name": "aibom:kind",
+          "value": "embedding"
+        },
+        {
+          "name": "aibom:provider",
+          "value": "openai"
+        },
+        {
+          "name": "aibom:locations",
+          "value": "src/agent.py:21"
+        },
+        {
+          "name": "aibom:hosting_region",
+          "value": "us"
+        },
+        {
+          "name": "aibom:data_processing_agreement",
+          "value": "true"
+        },
+        {
+          "name": "aibom:purpose",
+          "value": "Embedding ticket history for retrieval."
+        }
+      ]
+    },
+    {
+      "type": "data",
+      "bom-ref": "prompt:prompts/system.prompt.md:1:system.prompt",
+      "name": "system.prompt",
+      "version": "06da65ac8628",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "06da65ac86285d478fe0ac922dce4e58c3346953ae37e91e64a566032b7c64f3"
+        }
+      ],
+      "data": [
+        {
+          "type": "configuration",
+          "name": "system.prompt",
+          "classification": "prompt",
+          "description": "Prompt defined at prompts/system.prompt.md:1"
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:path",
+          "value": "prompts/system.prompt.md"
+        },
+        {
+          "name": "aibom:line",
+          "value": "1"
+        },
+        {
+          "name": "aibom:approx_tokens",
+          "value": "73"
+        },
+        {
+          "name": "aibom:source",
+          "value": "file"
+        },
+        {
+          "name": "aibom:owners",
+          "value": "@platform-ai"
+        }
+      ]
+    },
+    {
+      "type": "data",
+      "bom-ref": "prompt:src/agent.py:22:triage_prompt",
+      "name": "triage_prompt",
+      "version": "8d9561c84e7f",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "8d9561c84e7f2c296d15971e46c4b986ff02df8d3dbb6479365facbd75841617"
+        }
+      ],
+      "data": [
+        {
+          "type": "configuration",
+          "name": "triage_prompt",
+          "classification": "prompt",
+          "description": "Prompt defined at src/agent.py:22"
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:path",
+          "value": "src/agent.py"
+        },
+        {
+          "name": "aibom:line",
+          "value": "22"
+        },
+        {
+          "name": "aibom:approx_tokens",
+          "value": "40"
+        },
+        {
+          "name": "aibom:source",
+          "value": "inline"
+        },
+        {
+          "name": "aibom:owners",
+          "value": "@support-ai/agent-owners"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "tool:delete_customer_account",
+      "name": "delete_customer_account",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "09852b7660c15df98135f4fdf39bdf7f9e6add03ee332f5caa0d9336ac75006f"
+        }
+      ],
+      "description": "Delete a customer account and all associated data.",
+      "properties": [
+        {
+          "name": "aibom:path",
+          "value": "src/tools/payments.py"
+        },
+        {
+          "name": "aibom:line",
+          "value": "18"
+        },
+        {
+          "name": "aibom:source",
+          "value": "code"
+        },
+        {
+          "name": "aibom:param_keys",
+          "value": "customer_id"
+        },
+        {
+          "name": "aibom:capabilities",
+          "value": "destructive, identity"
+        },
+        {
+          "name": "aibom:risk",
+          "value": "high"
+        },
+        {
+          "name": "aibom:risk_override",
+          "value": "false"
+        },
+        {
+          "name": "aibom:matched_rules",
+          "value": "destructive.delete, identity.user-admin"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "tool:issue_refund",
+      "name": "issue_refund",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "6b9173f262b249eaa86ebef48ef2742a035777da10229c0667ca0db24f99ed59"
+        }
+      ],
+      "description": "Issue a refund for an order via the payments API.",
+      "properties": [
+        {
+          "name": "aibom:path",
+          "value": "src/tools/payments.py"
+        },
+        {
+          "name": "aibom:line",
+          "value": "8"
+        },
+        {
+          "name": "aibom:source",
+          "value": "code"
+        },
+        {
+          "name": "aibom:param_keys",
+          "value": "order_id, amount_cents, reason"
+        },
+        {
+          "name": "aibom:capabilities",
+          "value": "financial"
+        },
+        {
+          "name": "aibom:risk",
+          "value": "high"
+        },
+        {
+          "name": "aibom:human_in_the_loop",
+          "value": "true"
+        },
+        {
+          "name": "aibom:rate_limited",
+          "value": "true"
+        },
+        {
+          "name": "aibom:reversible",
+          "value": "false"
+        },
+        {
+          "name": "aibom:risk_override",
+          "value": "true"
+        },
+        {
+          "name": "aibom:risk_justification",
+          "value": "Money movement; requires an approver and is capped per day."
+        },
+        {
+          "name": "aibom:matched_rules",
+          "value": "money.movement"
+        },
+        {
+          "name": "aibom:heuristic_risk",
+          "value": "high"
+        },
+        {
+          "name": "aibom:heuristic_capabilities",
+          "value": "financial"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "tool:send_email",
+      "name": "send_email",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "a46b369baf19e95eca6ac6ba5a376e161a191528ebbec6f0a87be426d25b8392"
+        }
+      ],
+      "description": "Send an email to a customer.",
+      "properties": [
+        {
+          "name": "aibom:path",
+          "value": "src/tools/payments.py"
+        },
+        {
+          "name": "aibom:line",
+          "value": "23"
+        },
+        {
+          "name": "aibom:source",
+          "value": "code"
+        },
+        {
+          "name": "aibom:param_keys",
+          "value": "to, subject, body"
+        },
+        {
+          "name": "aibom:capabilities",
+          "value": "external-comms"
+        },
+        {
+          "name": "aibom:risk",
+          "value": "medium"
+        },
+        {
+          "name": "aibom:risk_override",
+          "value": "false"
+        },
+        {
+          "name": "aibom:matched_rules",
+          "value": "comms.email"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "tool:lookup_ticket",
+      "name": "lookup_ticket",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "72aabeb3964ba0256d5f3df77c5e1cccb5f34cc8559ea6f3c9c76275399b17f7"
+        }
+      ],
+      "description": "Read a support ticket from the ticketing system.",
+      "properties": [
+        {
+          "name": "aibom:path",
+          "value": "src/tools/payments.py"
+        },
+        {
+          "name": "aibom:line",
+          "value": "13"
+        },
+        {
+          "name": "aibom:source",
+          "value": "code"
+        },
+        {
+          "name": "aibom:param_keys",
+          "value": "ticket_id"
+        },
+        {
+          "name": "aibom:capabilities",
+          "value": "read"
+        },
+        {
+          "name": "aibom:risk",
+          "value": "low"
+        },
+        {
+          "name": "aibom:reversible",
+          "value": "true"
+        },
+        {
+          "name": "aibom:risk_override",
+          "value": "true"
+        },
+        {
+          "name": "aibom:risk_justification",
+          "value": "Read-only lookup against the ticketing API."
+        },
+        {
+          "name": "aibom:matched_rules",
+          "value": "read.query"
+        },
+        {
+          "name": "aibom:heuristic_risk",
+          "value": "low"
+        },
+        {
+          "name": "aibom:heuristic_capabilities",
+          "value": "read"
+        }
+      ]
+    },
+    {
+      "type": "data",
+      "bom-ref": "dataset:ticket-history",
+      "name": "ticket-history",
+      "data": [
+        {
+          "type": "dataset",
+          "name": "ticket-history",
+          "classification": "confidential",
+          "sensitiveData": [
+            "email",
+            "name",
+            "order_id"
+          ],
+          "governance": {
+            "owners": [
+              {
+                "organization": {
+                  "name": "support-platform"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:role",
+          "value": "dataset"
+        },
+        {
+          "name": "aibom:source",
+          "value": "https://warehouse.example.com/tables/tickets"
+        },
+        {
+          "name": "aibom:retention",
+          "value": "24 months"
+        },
+        {
+          "name": "aibom:jurisdiction",
+          "value": "US"
+        },
+        {
+          "name": "aibom:pii",
+          "value": "true"
+        },
+        {
+          "name": "aibom:consent_basis",
+          "value": "contract"
+        },
+        {
+          "name": "aibom:refresh",
+          "value": "daily"
+        },
+        {
+          "name": "aibom:classification",
+          "value": "confidential"
+        },
+        {
+          "name": "aibom:owners",
+          "value": "support-platform"
+        }
+      ],
+      "version": "rolling"
+    },
+    {
+      "type": "data",
+      "bom-ref": "retrieval:help-center-index",
+      "name": "help-center-index",
+      "data": [
+        {
+          "type": "dataset",
+          "name": "help-center-index",
+          "classification": "public",
+          "description": "Embedded help-centre articles used for retrieval augmentation."
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:role",
+          "value": "retrieval-source"
+        },
+        {
+          "name": "aibom:pii",
+          "value": "false"
+        },
+        {
+          "name": "aibom:refresh",
+          "value": "on-commit"
+        },
+        {
+          "name": "aibom:classification",
+          "value": "public"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "ai-sdk:pypi:anthropic",
+      "name": "anthropic",
+      "purl": "pkg:pypi/anthropic@0.39.0",
+      "properties": [
+        {
+          "name": "aibom:role",
+          "value": "ai-sdk"
+        },
+        {
+          "name": "aibom:ecosystem",
+          "value": "pypi"
+        },
+        {
+          "name": "aibom:provider",
+          "value": "anthropic"
+        }
+      ],
+      "version": "0.39.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "ai-sdk:pypi:langchain",
+      "name": "langchain",
+      "purl": "pkg:pypi/langchain@0.3.0",
+      "properties": [
+        {
+          "name": "aibom:role",
+          "value": "ai-sdk"
+        },
+        {
+          "name": "aibom:ecosystem",
+          "value": "pypi"
+        },
+        {
+          "name": "aibom:provider",
+          "value": "langchain"
+        }
+      ],
+      "version": "0.3.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "ai-sdk:pypi:llama-index-core",
+      "name": "llama-index-core",
+      "purl": "pkg:pypi/llama-index-core@0.12.0",
+      "properties": [
+        {
+          "name": "aibom:role",
+          "value": "ai-sdk"
+        },
+        {
+          "name": "aibom:ecosystem",
+          "value": "pypi"
+        },
+        {
+          "name": "aibom:provider",
+          "value": "llama-index"
+        }
+      ],
+      "version": "0.12.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "ai-sdk:pypi:mcp",
+      "name": "mcp",
+      "purl": "pkg:pypi/mcp@1.2.0",
+      "properties": [
+        {
+          "name": "aibom:role",
+          "value": "ai-sdk"
+        },
+        {
+          "name": "aibom:ecosystem",
+          "value": "pypi"
+        },
+        {
+          "name": "aibom:provider",
+          "value": "mcp"
+        }
+      ],
+      "version": "1.2.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "ai-sdk:pypi:openai",
+      "name": "openai",
+      "purl": "pkg:pypi/openai@1.40.0",
+      "properties": [
+        {
+          "name": "aibom:role",
+          "value": "ai-sdk"
+        },
+        {
+          "name": "aibom:ecosystem",
+          "value": "pypi"
+        },
+        {
+          "name": "aibom:provider",
+          "value": "openai"
+        }
+      ],
+      "version": "1.40.0"
+    }
+  ],
+  "services": [
+    {
+      "bom-ref": "mcp:@modelcontextprotocol/server-filesystem",
+      "name": "@modelcontextprotocol/server-filesystem",
+      "description": "MCP server (stdio)",
+      "x-trust-boundary": false,
+      "data": [
+        {
+          "flow": "bi-directional",
+          "classification": "unknown",
+          "name": "MCP protocol traffic"
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:transport",
+          "value": "stdio"
+        },
+        {
+          "name": "aibom:env_keys",
+          "value": "KB_ROOT"
+        },
+        {
+          "name": "aibom:config",
+          "value": "src/mcp_client.py"
+        },
+        {
+          "name": "aibom:package",
+          "value": "@modelcontextprotocol/server-filesystem"
+        },
+        {
+          "name": "aibom:version_pinned",
+          "value": "false"
+        },
+        {
+          "name": "aibom:capabilities",
+          "value": "write, filesystem, read"
+        },
+        {
+          "name": "aibom:risk",
+          "value": "medium"
+        },
+        {
+          "name": "aibom:risk_override",
+          "value": "false"
+        },
+        {
+          "name": "aibom:matched_rules",
+          "value": "fs.access, mcp.curated:@modelcontextprotocol/server-filesystem"
+        }
+      ]
+    },
+    {
+      "bom-ref": "mcp:crm",
+      "name": "crm",
+      "description": "MCP server (unknown)",
+      "x-trust-boundary": false,
+      "data": [
+        {
+          "flow": "bi-directional",
+          "classification": "unknown",
+          "name": "MCP protocol traffic"
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:transport",
+          "value": "unknown"
+        },
+        {
+          "name": "aibom:config",
+          "value": "aibom.yaml"
+        },
+        {
+          "name": "aibom:version_pinned",
+          "value": "false"
+        },
+        {
+          "name": "aibom:risk",
+          "value": "medium"
+        },
+        {
+          "name": "aibom:risk_override",
+          "value": "true"
+        },
+        {
+          "name": "aibom:risk_justification",
+          "value": "Read-only token scoped to the support account."
+        },
+        {
+          "name": "aibom:heuristic_risk",
+          "value": "unknown"
+        }
+      ]
+    },
+    {
+      "bom-ref": "provider:openai",
+      "name": "openai",
+      "description": "Hosted model API (openai)",
+      "authenticated": true,
+      "x-trust-boundary": true,
+      "data": [
+        {
+          "flow": "bi-directional",
+          "classification": "customer-pii",
+          "name": "Prompts, completions and embeddings"
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:role",
+          "value": "model-provider"
+        },
+        {
+          "name": "aibom:region",
+          "value": "us"
+        },
+        {
+          "name": "aibom:dpa",
+          "value": "true"
+        },
+        {
+          "name": "aibom:data_classification",
+          "value": "customer-pii"
+        },
+        {
+          "name": "aibom:models",
+          "value": "gpt-4.1-2024-08-06, gpt-4.1, text-embedding-3-small"
+        }
+      ],
+      "endpoints": [
+        "https://api.openai.com/v1"
+      ]
+    },
+    {
+      "bom-ref": "external:Eleven Labs TTS",
+      "name": "Eleven Labs TTS",
+      "x-trust-boundary": true,
+      "data": [
+        {
+          "flow": "bi-directional",
+          "classification": "customer-pii",
+          "name": "data shared",
+          "description": "transcripts"
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:role",
+          "value": "external-ai-service"
+        },
+        {
+          "name": "aibom:provider",
+          "value": "elevenlabs"
+        },
+        {
+          "name": "aibom:purpose",
+          "value": "voice"
+        },
+        {
+          "name": "aibom:data_shared",
+          "value": "transcripts"
+        },
+        {
+          "name": "aibom:dpa",
+          "value": "true"
+        }
+      ],
+      "provider": {
+        "name": "elevenlabs"
+      },
+      "authenticated": true
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "app:support-agent",
+      "dependsOn": [
+        "ai-sdk:pypi:anthropic",
+        "ai-sdk:pypi:langchain",
+        "ai-sdk:pypi:llama-index-core",
+        "ai-sdk:pypi:mcp",
+        "ai-sdk:pypi:openai",
+        "dataset:ticket-history",
+        "external:Eleven Labs TTS",
+        "mcp:@modelcontextprotocol/server-filesystem",
+        "mcp:crm",
+        "model:gpt-4.1",
+        "model:gpt-4.1-2024-08-06",
+        "model:text-embedding-3-small",
+        "prompt:prompts/system.prompt.md:1:system.prompt",
+        "prompt:src/agent.py:22:triage_prompt",
+        "provider:openai",
+        "retrieval:help-center-index",
+        "tool:delete_customer_account",
+        "tool:issue_refund",
+        "tool:lookup_ticket",
+        "tool:send_email"
+      ]
+    },
+    {
+      "ref": "model:gpt-4.1",
+      "dependsOn": [
+        "prompt:src/agent.py:22:triage_prompt"
+      ]
+    },
+    {
+      "ref": "model:gpt-4.1-2024-08-06",
+      "dependsOn": [
+        "prompt:src/agent.py:22:triage_prompt"
+      ]
+    },
+    {
+      "ref": "model:text-embedding-3-small",
+      "dependsOn": [
+        "prompt:src/agent.py:22:triage_prompt"
+      ]
+    },
+    {
+      "ref": "tool:delete_customer_account",
+      "dependsOn": []
+    },
+    {
+      "ref": "tool:issue_refund",
+      "dependsOn": []
+    },
+    {
+      "ref": "tool:lookup_ticket",
+      "dependsOn": []
+    },
+    {
+      "ref": "tool:send_email",
+      "dependsOn": []
+    }
+  ],
+  "compositions": [
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "model:gpt-4.1",
+        "model:gpt-4.1-2024-08-06",
+        "model:text-embedding-3-small"
+      ]
+    },
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "prompt:prompts/system.prompt.md:1:system.prompt",
+        "prompt:src/agent.py:22:triage_prompt"
+      ]
+    },
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "tool:delete_customer_account",
+        "tool:issue_refund",
+        "tool:lookup_ticket",
+        "tool:send_email"
+      ]
+    },
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "mcp:@modelcontextprotocol/server-filesystem",
+        "mcp:crm"
+      ]
+    },
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "provider:openai"
+      ]
+    },
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "ai-sdk:pypi:anthropic",
+        "ai-sdk:pypi:langchain",
+        "ai-sdk:pypi:llama-index-core",
+        "ai-sdk:pypi:mcp",
+        "ai-sdk:pypi:openai"
+      ]
+    },
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "dataset:ticket-history",
+        "retrieval:help-center-index"
+      ]
+    },
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "external:Eleven Labs TTS"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "aibom:rules_version",
+      "value": "2026.09.1"
+    },
+    {
+      "name": "aibom:tool_version",
+      "value": "aibom 0.1.0"
+    },
+    {
+      "name": "aibom:source_root",
+      "value": "."
+    },
+    {
+      "name": "aibom:review_notes",
+      "value": "warning:model.floating, warning:model.floating, error:model.retired, info:model.no_evals, error:tool.high_risk_no_hitl, warning:mcp.unpinned_package, info:dataset.no_owner"
+    }
+  ]
+}

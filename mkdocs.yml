@@ -1,0 +1,69 @@
+# Site configuration for MkDocs Material.
+# `pip install mkdocs-material && mkdocs serve`
+site_name: aibom
+site_description: An audit-ready AI Bill of Materials from your repo, in one command.
+site_url: https://modelsurface.github.io/aibom/
+repo_url: https://github.com/modelsurface/aibom
+repo_name: modelsurface/aibom
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: cyan
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: cyan
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+    - toc.follow
+
+markdown_extensions:
+  - admonition
+  - tables
+  - def_list
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight
+  - attr_list
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - What's in the BOM: whats-in-the-bom.md
+  - Inputs: inputs.md
+  - aibom.yaml: manifest.md
+  - Risk rules: risk-rules.md
+  - Signing: signing.md
+  - Release integration: release-integration.md
+  - Framework mapping: framework-mapping.md
+  - FAQ: faq.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/modelsurface/aibom
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/aibom/

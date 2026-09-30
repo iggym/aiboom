@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="aibom logo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c3aed"/>
+      <stop offset="0.5" stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0abfc"/>
+      <stop offset="1" stop-color="#a5b4fc"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect x="8" y="8" width="240" height="240" rx="54" fill="url(#bg)"/>
+
+  <!-- circuit traces: the "AI surface" -->
+  <g stroke="#c7d2fe" stroke-width="3" stroke-linecap="round" opacity="0.75">
+    <path d="M64 196 L64 150 L96 118"/>
+    <path d="M128 196 L128 160 L160 128"/>
+    <path d="M192 196 L192 150 L160 118"/>
+  </g>
+  <g fill="#e0e7ff">
+    <circle cx="64" cy="196" r="6"/>
+    <circle cx="128" cy="196" r="6"/>
+    <circle cx="192" cy="196" r="6"/>
+  </g>
+
+  <!-- the die: a bill of materials chip -->
+  <rect x="60" y="52" width="136" height="72" rx="14" fill="url(#chip)" filter="url(#glow)"/>
+  <g stroke="#312e81" stroke-width="4" stroke-linecap="round">
+    <path d="M88 88 h18"/>
+    <path d="M118 88 h50"/>
+  </g>
+  <g fill="#312e81">
+    <circle cx="82" cy="76" r="5"/>
+  </g>
+
+  <!-- pins -->
+  <g stroke="#fbcfe8" stroke-width="4" stroke-linecap="round">
+    <path d="M76 124 v10"/><path d="M104 124 v10"/><path d="M132 124 v10"/><path d="M160 124 v10"/><path d="M188 124 v10"/>
+  </g>
+
+  <!-- scanned lines taking inventory -->
+  <g stroke="#67e8f9" stroke-width="3" stroke-linecap="round" opacity="0.9">
+    <path d="M52 44 h-14 v14"/>
+    <path d="M204 44 h14 v14"/>
+    <path d="M52 212 h-14 v-14"/>
+    <path d="M204 212 h14 v-14"/>
+  </g>
+</svg>

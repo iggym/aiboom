@@ -1,0 +1,8 @@
+# CODEOWNERS for the support-agent fixture.
+# Last matching pattern wins, per GitHub semantics.
+
+* @platform-ai
+
+prompts/ @support-ai/prompt-owners
+src/agent.py @support-ai/agent-owners
+src/tools/ @support-ai/tool-owners ada@example.com

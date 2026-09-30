@@ -1,0 +1,237 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://modelsurface.github.io/aibom/schema/aibom-1.schema.json",
+  "title": "aibom.yaml",
+  "description": "Declarations that cannot be inferred from source: system facts, per-model facts, tool risk overrides, datasets, retrieval sources and third-party AI services.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "system"],
+  "properties": {
+    "schema": {
+      "const": 1,
+      "description": "Manifest schema version. Must be 1."
+    },
+    "system": { "$ref": "#/definitions/system" },
+    "models": {
+      "type": "object",
+      "description": "Per-model declarations, keyed by the model alias as it appears in source (or the pinned snapshot).",
+      "additionalProperties": { "$ref": "#/definitions/model" }
+    },
+    "tools": {
+      "type": "object",
+      "description": "Per-tool overrides, keyed by tool name.",
+      "additionalProperties": { "$ref": "#/definitions/toolOverride" }
+    },
+    "mcp_servers": {
+      "type": "object",
+      "description": "Per-MCP-server overrides, keyed by server name.",
+      "additionalProperties": { "$ref": "#/definitions/toolOverride" }
+    },
+    "datasets": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/dataset" }
+    },
+    "retrieval_sources": {
+      "type": "array",
+      "description": "RAG corpora, vector stores and indexes that feed the system.",
+      "items": { "$ref": "#/definitions/retrievalSource" }
+    },
+    "external_services": {
+      "type": "array",
+      "description": "Third-party AI services that are not visible in code (e.g. a managed TTS endpoint).",
+      "items": { "$ref": "#/definitions/externalService" }
+    }
+  },
+  "definitions": {
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "email": { "type": "string" },
+        "role": {
+          "type": "string",
+          "description": "Free-text, but `accountable` and `responsible` are the roles the renderer highlights."
+        }
+      }
+    },
+    "riskClassification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["framework", "label"],
+      "properties": {
+        "framework": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string" }
+      }
+    },
+    "system": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "version": {
+          "type": "string",
+          "description": "Explicit version, or the literal `git` to derive it from the tag/commit."
+        },
+        "description": { "type": "string" },
+        "owner": { "type": "string", "description": "Accountable owner, usually an email." },
+        "contacts": { "type": "array", "items": { "$ref": "#/definitions/contact" } },
+        "purpose": { "type": "string" },
+        "deployment": {
+          "type": "string",
+          "enum": ["internal", "customer-facing", "embedded"]
+        },
+        "risk_classification": { "$ref": "#/definitions/riskClassification" },
+        "human_oversight": { "type": "string" },
+        "data_classification": { "type": "string" },
+        "jurisdictions": { "type": "array", "items": { "type": "string" } },
+        "complete": {
+          "type": "object",
+          "description": "Declare that a manifest-supplied inventory is exhaustive. Only then does the BOM say `complete` for that kind.",
+          "additionalProperties": { "type": "boolean" }
+        }
+      }
+    },
+    "eval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "url": { "type": "string" },
+        "score": { "type": ["string", "number"] },
+        "date": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "purpose": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": ["foundation", "fine-tune", "embedding", "reranker", "classifier", "guardrail", "other"]
+        },
+        "task": {
+          "type": "string",
+          "description": "Model card `modelParameters.task`, e.g. `text-generation`, `text-classification`."
+        },
+        "architecture_family": {
+          "type": "string",
+          "description": "Model card `modelParameters.architectureFamily`, e.g. `transformer`."
+        },
+        "use_cases": { "type": "array", "items": { "type": "string" } },
+        "technical_limitations": { "type": "array", "items": { "type": "string" } },
+        "ethical_considerations": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": { "type": "string" },
+                  "mitigation_strategy": { "type": "string" }
+                }
+              }
+            ]
+          }
+        },
+        "provider": { "type": "string" },
+        "provider_docs": { "type": "string" },
+        "hosting_region": { "type": "string" },
+        "data_processing_agreement": { "type": "boolean" },
+        "training_data_optout": { "type": "boolean" },
+        "license": { "type": "string" },
+        "context_window": { "type": "integer", "minimum": 0 },
+        "price_in_per_1m": { "type": ["number", "string"] },
+        "price_out_per_1m": { "type": ["number", "string"] },
+        "deprecation": { "type": "string", "description": "ISO date the alias was deprecated." },
+        "retirement": { "type": "string", "description": "ISO date the model is retired or will be." },
+        "evals": { "type": "array", "items": { "$ref": "#/definitions/eval" } },
+        "notes": { "type": "string" }
+      }
+    },
+    "toolOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "risk": { "type": "string", "enum": ["high", "medium", "low", "unknown"] },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "human_in_the_loop": { "type": "boolean" },
+        "reversible": { "type": "boolean" },
+        "rate_limited": { "type": "boolean" },
+        "justification": {
+          "type": "string",
+          "description": "Required in spirit: an override without a justification is recorded but flagged in review notes."
+        }
+      }
+    },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string" },
+        "classification": { "type": "string" },
+        "sensitive_data": { "type": "array", "items": { "type": "string" } },
+        "pii": { "type": "boolean" },
+        "consent_basis": { "type": "string" },
+        "retention": { "type": "string" },
+        "jurisdiction": { "type": "string" },
+        "owners": { "type": "array", "items": { "type": "string" } },
+        "custodians": { "type": "array", "items": { "type": "string" } },
+        "source": { "type": "string" },
+        "refresh": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "retrievalSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "kind": {
+          "type": "string",
+          "enum": ["vector-store", "index", "corpus", "search", "graph", "other"]
+        },
+        "endpoint": { "type": "string" },
+        "classification": { "type": "string" },
+        "pii": { "type": "boolean" },
+        "retention": { "type": "string" },
+        "jurisdiction": { "type": "string" },
+        "owners": { "type": "array", "items": { "type": "string" } },
+        "source": { "type": "string" },
+        "refresh": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "externalService": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "provider": { "type": "string" },
+        "purpose": { "type": "string" },
+        "endpoint": { "type": "string" },
+        "data_shared": { "type": "array", "items": { "type": "string" } },
+        "classification": { "type": "string" },
+        "dpa": { "type": "boolean" },
+        "region": { "type": "string" },
+        "authenticated": { "type": "boolean" },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,125 @@
+name: "aibom — generate, validate, render"
+description: >-
+  Generate a CycloneDX 1.6 AI Bill of Materials from your repository, validate
+  it, optionally render Markdown/HTML, sign it with sigstore, and comment a diff
+  against the base branch. See https://github.com/modelsurface/aibom.
+author: "modelsurface"
+
+branding:
+  icon: "package"
+  color: "purple"
+
+inputs:
+  path:
+    description: "Repository path to scan."
+    required: false
+    default: "."
+  output:
+    description: "Path to write the CycloneDX JSON BOM."
+    required: false
+    default: "aibom.cdx.json"
+  markdown:
+    description: "Write AIBOM.md to this path (empty to skip)."
+    required: false
+    default: "AIBOM.md"
+  html:
+    description: "Write AIBOM.html to this path (empty to skip)."
+    required: false
+    default: ""
+  strict:
+    description: "Fail the job when review notes contain error-level findings."
+    required: false
+    default: "false"
+  refresh:
+    description: "Force a fresh scan instead of reading surface.lock."
+    required: false
+    default: "true"
+  sign:
+    description: >-
+      Sign the BOM keylessly with cosign (requires `id-token: write`). Never
+      enabled by default: signing publishes the digest to a public transparency
+      log, which is a deliberate, user-initiated act.
+    required: false
+    default: "false"
+  comment:
+    description: "Post/update a sticky PR comment with the AI-BOM diff."
+    required: false
+    default: "true"
+  upload-artifact:
+    description: "Upload the BOM and rendered files as a workflow artifact."
+    required: false
+    default: "true"
+  python-version:
+    description: "Python version to run aibom with."
+    required: false
+    default: "3.12"
+
+outputs:
+  bom-path:
+    description: "Path to the generated CycloneDX JSON BOM."
+    value: ${{ steps.generate.outputs.bom-path }}
+  digest:
+    description: "The stable content digest of the generated BOM."
+    value: ${{ steps.generate.outputs.digest }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install aibom
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install "aibom[sign,xml]"
+
+    - name: Generate the AI BOM
+      id: generate
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      env:
+        STRICT: ${{ inputs.strict }}
+        REFRESH: ${{ inputs.refresh }}
+        OUTPUT: ${{ inputs.output }}
+        MARKDOWN: ${{ inputs.markdown }}
+        HTML: ${{ inputs.html }}
+      run: |
+        set -euo pipefail
+        args=(generate . -o "$OUTPUT")
+        [ "$REFRESH" = "true" ] && args+=(--refresh)
+        [ -n "$MARKDOWN" ] && args+=(--markdown "$MARKDOWN")
+        [ -n "$HTML" ] && args+=(--html "$HTML")
+        [ "$STRICT" = "true" ] && args+=(--strict)
+        aibom "${args[@]}"
+        echo "bom-path=$OUTPUT" >> "$GITHUB_OUTPUT"
+        digest=$(cut -d' ' -f1 "$OUTPUT.sha256")
+        echo "digest=$digest" >> "$GITHUB_OUTPUT"
+        echo "AI BOM digest: $digest"
+
+    - name: Validate the BOM against the CycloneDX 1.6 schema
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: aibom validate "${{ inputs.output }}" --strict
+
+    - name: Sign the BOM (keyless sigstore)
+      if: ${{ inputs.sign == 'true' }}
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      run: |
+        aibom attest "${{ inputs.output }}"
+        aibom verify "${{ inputs.output }}"
+
+    - name: Upload the BOM and rendered reports
+      if: ${{ inputs.upload-artifact == 'true' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: aibom
+        path: |
+          ${{ inputs.path }}/${{ inputs.output }}
+          ${{ inputs.path }}/${{ inputs.output }}.sha256
+          ${{ inputs.path }}/${{ inputs.markdown }}
+          ${{ inputs.path }}/${{ inputs.html }}
+        if-no-files-found: warn

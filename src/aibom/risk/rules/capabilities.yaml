@@ -1,0 +1,227 @@
+# aibom capability rulebook — versioned, human-readable, auditable.
+#
+# This file IS the explanation an auditor gets. `aibom explain-risk <tool>`
+# prints the rule ids that matched, so a "high" label can always be traced to a
+# regex a human can read. The `rules_version` below is copied into every BOM.
+#
+# Matching is performed against a normalised "haystack" per tool:
+#   identifier  -> the tool/server name split on case, `_`, `.` and `-`
+#   description -> the tool description / docstring
+#   parameters  -> the parameter names of the tool function
+#   command     -> an MCP server's command + args
+#   package     -> an MCP server's npm/PyPI package name
+#
+# A rule fires when its regex matches the field(s) it declares. All rules are
+# additive: a tool can hold several capabilities, and its risk is the highest
+# level among the capabilities it holds.
+
+rules_version: "2026.09.1"
+
+# Risk level per capability. `risk = max(level(cap) for cap in capabilities)`.
+capability_levels:
+  code-exec: high
+  secrets: high
+  financial: high
+  destructive: high
+  identity: medium
+  write: medium
+  external-comms: medium
+  filesystem: medium
+  network: low
+  read: low
+  unknown: unknown
+
+# Presentation order and the words used in the Markdown/HTML tables.
+capability_labels:
+  code-exec: Code execution
+  secrets: Secrets access
+  financial: Financial
+  destructive: Destructive
+  identity: Identity & permissions
+  write: Write
+  external-comms: External comms
+  filesystem: Filesystem
+  network: Network
+  read: Read
+  unknown: Unknown
+
+rules:
+  # --- code-exec -------------------------------------------------------------
+  - id: exec.shell
+    capability: code-exec
+    why: Shell command execution gives an attacker arbitrary code on the host.
+    identifier: '\b(shell|bash|sh|zsh|powershell|cmd|terminal|console|subprocess|spawn|popen|exec)\b'
+  - id: exec.eval
+    capability: code-exec
+    why: Dynamic evaluation executes data as code.
+    identifier: '\b(eval|exec|compile|eval code|run code|execute code|interpret)\b'
+  - id: exec.python
+    capability: code-exec
+    why: Invoking a Python interpreter or notebook kernel executes arbitrary code.
+    identifier: '\b(python|python3|ipython|jupyter|kernel|repl|notebook)\b'
+  - id: exec.package-install
+    capability: code-exec
+    why: Installing packages runs arbitrary install hooks.
+    identifier: '\b(pip|pip3|npm|pnpm|yarn|apt|brew|cargo|go get|install package|package install)\b'
+  - id: exec.sql-raw
+    capability: code-exec
+    why: Raw SQL execution against a live database can read or destroy data.
+    identifier: '\b(sql|query|execute query|raw query|db query)\b'
+    parameters: '\b(query|sql|statement|raw)\b'
+
+  # --- secrets ---------------------------------------------------------------
+  - id: secrets.read
+    capability: secrets
+    why: Reading credentials from the environment or a vault exposes them to the model.
+    identifier: '\b(secret|secrets|token|api key|apikey|api_key|credential|credentials|password|passwd|vault|keychain|kms)\b'
+    parameters: '\b(secret|token|api_key|apikey|password|credential)\b'
+  - id: secrets.env
+    capability: secrets
+    why: Environment variables commonly hold provider keys and session tokens.
+    identifier: '\b(env|environment|dotenv|getenv|process env)\b'
+    parameters: '\b(env|environment)\b'
+  - id: secrets.rotate
+    capability: secrets
+    why: Rotating or minting credentials is a privileged identity operation.
+    identifier: '\b(rotate secret|mint token|issue token|create key|generate key)\b'
+
+  # --- financial -------------------------------------------------------------
+  - id: money.movement
+    capability: financial
+    why: Moving money is irreversible and directly monetisable by an attacker.
+    identifier: '\b(refund|charge|payment|pay|transfer|payout|disburse|wire|remit|invoice|billing|checkout|purchase|order)\b'
+  - id: money.pricing
+    capability: financial
+    why: Price manipulation affects customer billing.
+    identifier: '\b(price|pricing|discount|credit|coupon|balance|ledger)\b'
+  - id: money.subscription
+    capability: financial
+    why: Subscription changes alter recurring revenue and entitlements.
+    identifier: '\b(subscription|plan change|upgrade plan|downgrade|cancel subscription|renew)\b'
+
+  # --- destructive -----------------------------------------------------------
+  - id: destructive.delete
+    capability: destructive
+    why: Deletion destroys data and is usually not reversible.
+    identifier: '\b(delete|remove|drop|destroy|purge|truncate|erase|wipe|unlink|rm|revoke|terminate|kill)\b'
+  - id: destructive.bulk
+    capability: destructive
+    why: Bulk mutation amplifies the blast radius of a mistake.
+    # `identifier` names the object, `description` the verb.
+    # Both must match or e.g. `post_to_channel` reads as a tracker write.
+    match: all
+    identifier: '\b(bulk|batch|mass|all|every)\b'
+    description: '\b(delete|remove|drop|destroy|overwrite|purge)\b'
+  - id: destructive.overwrite
+    capability: destructive
+    why: Overwriting replaces existing state without a copy.
+    identifier: '\b(overwrite|replace|reset|restore|rollback|revert|force push)\b'
+
+  # --- identity --------------------------------------------------------------
+  - id: identity.auth
+    capability: identity
+    why: Authentication surfaces can be abused to impersonate or escalate.
+    identifier: '\b(auth|authenticate|login|logout|signin|sign in|sso|oauth|session|impersonate|sudo)\b'
+  - id: identity.permission
+    capability: identity
+    why: Changing permissions or roles is a privilege-escalation primitive.
+    identifier: '\b(permission|permissions|role|roles|acl|grant|revoke|policy|rbac|admin|privilege|scope)\b'
+  - id: identity.user-admin
+    capability: identity
+    why: User administration can create or take over accounts.
+    # `identifier` names the object, `description` the verb.
+    # Both must match or e.g. `post_to_channel` reads as a tracker write.
+    match: all
+    identifier: '\b(user|users|account|accounts|member|members|group|groups|org|organization|team|tenant)\b'
+    description: '\b(create|add|invite|delete|remove|update|modify|manage|admin)\b'
+  - id: identity.identity-provider
+    capability: identity
+    why: Identity-provider operations affect the whole tenant.
+    identifier: '\b(idp|identity provider|okta|azure ad|entra|keycloak|ldap|directory)\b'
+
+  # --- write -----------------------------------------------------------------
+  - id: write.mutation
+    capability: write
+    why: Writing changes state the system or a third party depends on.
+    identifier: '\b(write|create|add|insert|update|modify|edit|patch|put|post|save|set|upsert|merge|append|upload|publish|deploy)\b'
+  - id: write.issue-tracker
+    capability: write
+    why: Filing or editing tickets is a durable, externally visible write.
+    # `identifier` names the object, `description` the verb.
+    # Both must match or e.g. `post_to_channel` reads as a tracker write.
+    match: all
+    identifier: '\b(issue|ticket|comment|pull request|pr|merge|commit|push|branch|review)\b'
+    description: '\b(create|add|update|close|open|merge|post|comment)\b'
+  - id: write.document
+    capability: write
+    why: Document edits are durable writes into shared knowledge stores.
+    # `identifier` names the object, `description` the verb.
+    # Both must match or e.g. `post_to_channel` reads as a tracker write.
+    match: all
+    identifier: '\b(document|doc|page|wiki|notion|confluence|sheet|spreadsheet|slide)\b'
+    description: '\b(create|add|update|edit|write|append)\b'
+  - id: write.calendar
+    capability: write
+    why: Scheduling writes affect other people's calendars.
+    identifier: '\b(calendar|event|meeting|schedule|invite|rsvp)\b'
+
+  # --- external-comms --------------------------------------------------------
+  - id: comms.email
+    capability: external-comms
+    why: Outbound email leaves the trust boundary and is hard to recall.
+    identifier: '\b(email|mail|smtp|sendmail|newsletter|gmail|outlook|ses)\b'
+  - id: comms.chat
+    capability: external-comms
+    why: Chat messages reach humans directly and can be socially engineered.
+    identifier: '\b(slack|discord|teams|telegram|whatsapp|sms|message|chat|dm|channel|notify|notification)\b'
+  - id: comms.webhook
+    capability: external-comms
+    why: Webhooks push data to endpoints outside the system's control.
+    identifier: '\b(webhook|callback|post to url|publish event|emit event)\b'
+  - id: comms.social
+    capability: external-comms
+    why: Public posting is an unrecallable external communication.
+    identifier: '\b(tweet|post|social|linkedin|facebook|instagram|youtube|publish publicly)\b'
+  - id: comms.voice
+    capability: external-comms
+    why: Voice/TTS output is a direct external communication channel.
+    identifier: '\b(tts|text to speech|voice|call|phone|dial|twilio|elevenlabs)\b'
+
+  # --- filesystem ------------------------------------------------------------
+  - id: fs.access
+    capability: filesystem
+    why: Filesystem access reaches everything the process can read or write.
+    identifier: '\b(file|files|filesystem|path|directory|dir|folder|glob|walk)\b'
+    parameters: '\b(path|file|filename|dir|directory|glob)\b'
+  - id: fs.attachment
+    capability: filesystem
+    why: Attachments are attacker-controlled files that may be parsed or executed.
+    identifier: '\b(attachment|upload file|download file|document file|blob|s3|bucket)\b'
+  - id: fs.config
+    capability: filesystem
+    why: Editing configuration can change runtime behaviour.
+    identifier: '\b(config|configuration|settings|yaml|json file|env file|dotfile|rc file)\b'
+
+  # --- network ---------------------------------------------------------------
+  - id: net.http
+    capability: network
+    why: Outbound HTTP reaches endpoints outside the trust boundary.
+    identifier: '\b(http|https|url|uri|request|fetch|curl|wget|api call|endpoint|rest|graphql)\b'
+  - id: net.dns
+    capability: network
+    why: Name resolution and raw sockets can be used for exfiltration.
+    identifier: '\b(dns|socket|tcp|udp|ping|traceroute|connect)\b'
+  - id: net.browse
+    capability: network
+    why: Browsing fetches arbitrary remote content into the model's context.
+    identifier: '\b(browse|browser|scrape|crawl|navigate|screenshot url|render page)\b'
+
+  # --- read ------------------------------------------------------------------
+  - id: read.query
+    capability: read
+    why: Reading exposes data to the model and its logs.
+    identifier: '\b(read|get|list|fetch|search|query|lookup|find|describe|inspect|view|show|retrieve|download)\b'
+  - id: read.knowledge
+    capability: read
+    why: Knowledge-base reads surface internal content into prompts.
+    identifier: '\b(knowledge|kb|wiki|docs|documentation|faq|help center|retrieval|embedding|vector|index)\b'

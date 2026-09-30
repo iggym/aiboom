@@ -1,0 +1,16 @@
+# pre-commit: keep the AI BOM fresh (spec §6.7).
+#
+# This is optional and comes with the trade-offs documented in
+# docs/release-integration.md: the hook rewrites a committed artifact, so a
+# commit that touches the AI surface will include an `aibom.cdx.json` diff.
+# That noise is the feature — a stale BOM in `main` is the worse outcome.
+repos:
+  - repo: local
+    hooks:
+      - id: aibom-generate
+        name: aibom generate (keep aibom.cdx.json fresh)
+        entry: aibom-generate
+        language: python
+        additional_dependencies: ["aibom"]
+        pass_filenames: false
+        always_run: true

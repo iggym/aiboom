@@ -1,0 +1,19 @@
+schema: 1
+
+system:
+  name: mcp-heavy
+  version: 0.9.0
+  description: Research agent wired to many MCP servers.
+  owner: research-eng@example.com
+  purpose: Automated research over web, code and databases.
+  deployment: internal
+  data_classification: internal
+
+models:
+  gpt-4o:
+    purpose: Research planning and synthesis.
+    provider: openai
+    license: proprietary
+    hosting_region: us
+    data_processing_agreement: true
+    training_data_optout: false
