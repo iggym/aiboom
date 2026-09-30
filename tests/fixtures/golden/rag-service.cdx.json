@@ -1,0 +1,470 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "version": 1,
+  "metadata": {
+    "lifecycles": [
+      {
+        "phase": "build"
+      }
+    ],
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "bom-ref": "tool:aibom@0.1.0",
+          "name": "aibom",
+          "version": "0.1.0",
+          "supplier": {
+            "name": "modelsurface"
+          },
+          "externalReferences": [
+            {
+              "type": "vcs",
+              "url": "https://github.com/modelsurface/aibom"
+            },
+            {
+              "type": "website",
+              "url": "https://modelsurface.github.io/aibom/"
+            }
+          ]
+        }
+      ]
+    },
+    "component": {
+      "type": "application",
+      "bom-ref": "app:rag-service",
+      "name": "rag-service",
+      "version": "2.0.1",
+      "description": "Retrieval-augmented question answering over internal policy documents.",
+      "authors": [
+        {
+          "name": "knowledge-platform@example.com"
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:purpose",
+          "value": "Answer employee questions about internal policy with citations."
+        },
+        {
+          "name": "aibom:deployment",
+          "value": "internal"
+        },
+        {
+          "name": "aibom:data_classification",
+          "value": "internal"
+        },
+        {
+          "name": "aibom:jurisdictions",
+          "value": "EU"
+        },
+        {
+          "name": "aibom:risk_framework",
+          "value": "ISO/IEC 42001"
+        },
+        {
+          "name": "aibom:risk_label",
+          "value": "internal-tooling"
+        },
+        {
+          "name": "aibom:risk_rationale",
+          "value": "Internal users only; answers are advisory and always cite sources."
+        },
+        {
+          "name": "aibom:owner",
+          "value": "knowledge-platform@example.com"
+        },
+        {
+          "name": "aibom:rules_version",
+          "value": "2026.09.1"
+        },
+        {
+          "name": "aibom:ai_schema_version",
+          "value": "1.0"
+        },
+        {
+          "name": "aibom:generator",
+          "value": "aibom 0.1.0"
+        },
+        {
+          "name": "aibom:scanner",
+          "value": "bundled"
+        },
+        {
+          "name": "aibom:lock",
+          "value": "/workspace/project/aiboom/tests/fixtures/rag-service/surface.lock"
+        },
+        {
+          "name": "aibom:lock_generated",
+          "value": "true"
+        },
+        {
+          "name": "aibom:lock_fresh",
+          "value": "true"
+        },
+        {
+          "name": "aibom:manifest",
+          "value": "/workspace/project/aiboom/tests/fixtures/rag-service/aibom.yaml"
+        },
+        {
+          "name": "aibom:review_errors",
+          "value": "0"
+        },
+        {
+          "name": "aibom:review_warnings",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "machine-learning-model",
+      "bom-ref": "model:claude-3-5-sonnet",
+      "name": "claude-3-5-sonnet",
+      "supplier": {
+        "name": "anthropic"
+      },
+      "group": "anthropic",
+      "description": "Grounded answer generation with citations.",
+      "modelCard": {
+        "modelParameters": {
+          "modelArchitecture": "foundation"
+        },
+        "quantitativeAnalysis": {
+          "performanceMetrics": [
+            {
+              "type": "Citation Faithfulness",
+              "value": "0.95"
+            }
+          ]
+        }
+      },
+      "externalReferences": [
+        {
+          "type": "documentation",
+          "url": "https://docs.anthropic.com/en/docs/about-claude/models"
+        },
+        {
+          "type": "documentation",
+          "url": "https://evals.example.com/cite"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "proprietary"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:alias",
+          "value": "claude-3-5-sonnet"
+        },
+        {
+          "name": "aibom:resolved",
+          "value": "false"
+        },
+        {
+          "name": "aibom:floating",
+          "value": "true"
+        },
+        {
+          "name": "aibom:kind",
+          "value": "foundation"
+        },
+        {
+          "name": "aibom:provider",
+          "value": "anthropic"
+        },
+        {
+          "name": "aibom:locations",
+          "value": "app/qa.py:11"
+        },
+        {
+          "name": "aibom:hosting_region",
+          "value": "eu"
+        },
+        {
+          "name": "aibom:data_processing_agreement",
+          "value": "true"
+        },
+        {
+          "name": "aibom:training_data_optout",
+          "value": "true"
+        },
+        {
+          "name": "aibom:purpose",
+          "value": "Grounded answer generation with citations."
+        }
+      ]
+    },
+    {
+      "type": "data",
+      "bom-ref": "prompt:app/qa.py:13:answer_prompt",
+      "name": "answer_prompt",
+      "version": "09f0cb9ee3a0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "09f0cb9ee3a06fba77bbfd2439c2e5be0185967a0cc64cb38af5cde9043e9aaf"
+        }
+      ],
+      "data": [
+        {
+          "type": "configuration",
+          "name": "answer_prompt",
+          "classification": "prompt",
+          "description": "Prompt defined at app/qa.py:13"
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:path",
+          "value": "app/qa.py"
+        },
+        {
+          "name": "aibom:line",
+          "value": "13"
+        },
+        {
+          "name": "aibom:approx_tokens",
+          "value": "51"
+        },
+        {
+          "name": "aibom:source",
+          "value": "inline"
+        },
+        {
+          "name": "aibom:owners",
+          "value": "knowledge-platform@example.com"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "tool:search_policies",
+      "name": "search_policies",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "51adc07b1312a47b96abc6c8570e5f9e51a1afbd01bf30e282e238986be3565d"
+        }
+      ],
+      "description": "Declared in aibom.yaml; not visible in source.",
+      "properties": [
+        {
+          "name": "aibom:source",
+          "value": "manifest"
+        },
+        {
+          "name": "aibom:capabilities",
+          "value": "read"
+        },
+        {
+          "name": "aibom:risk",
+          "value": "low"
+        },
+        {
+          "name": "aibom:rate_limited",
+          "value": "true"
+        },
+        {
+          "name": "aibom:reversible",
+          "value": "true"
+        },
+        {
+          "name": "aibom:risk_override",
+          "value": "true"
+        },
+        {
+          "name": "aibom:risk_justification",
+          "value": "Read-only search over a public corpus inside the VPC."
+        },
+        {
+          "name": "aibom:matched_rules",
+          "value": "read.query"
+        },
+        {
+          "name": "aibom:heuristic_risk",
+          "value": "low"
+        },
+        {
+          "name": "aibom:heuristic_capabilities",
+          "value": "read"
+        }
+      ]
+    },
+    {
+      "type": "data",
+      "bom-ref": "dataset:policy-corpus",
+      "name": "policy-corpus",
+      "data": [
+        {
+          "type": "dataset",
+          "name": "policy-corpus",
+          "classification": "internal",
+          "governance": {
+            "owners": [
+              {
+                "organization": {
+                  "name": "knowledge-platform"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:role",
+          "value": "dataset"
+        },
+        {
+          "name": "aibom:source",
+          "value": "s3://internal-policy-docs"
+        },
+        {
+          "name": "aibom:retention",
+          "value": "7 years"
+        },
+        {
+          "name": "aibom:jurisdiction",
+          "value": "EU"
+        },
+        {
+          "name": "aibom:pii",
+          "value": "false"
+        },
+        {
+          "name": "aibom:refresh",
+          "value": "weekly"
+        },
+        {
+          "name": "aibom:classification",
+          "value": "internal"
+        },
+        {
+          "name": "aibom:owners",
+          "value": "knowledge-platform"
+        }
+      ],
+      "version": "2026.08"
+    }
+  ],
+  "services": [
+    {
+      "bom-ref": "provider:anthropic",
+      "name": "anthropic",
+      "description": "Hosted model API (anthropic)",
+      "authenticated": true,
+      "x-trust-boundary": true,
+      "data": [
+        {
+          "flow": "bi-directional",
+          "classification": "internal",
+          "name": "Prompts, completions and embeddings"
+        }
+      ],
+      "properties": [
+        {
+          "name": "aibom:role",
+          "value": "model-provider"
+        },
+        {
+          "name": "aibom:region",
+          "value": "eu"
+        },
+        {
+          "name": "aibom:dpa",
+          "value": "true"
+        },
+        {
+          "name": "aibom:data_classification",
+          "value": "internal"
+        },
+        {
+          "name": "aibom:models",
+          "value": "claude-3-5-sonnet"
+        }
+      ],
+      "endpoints": [
+        "https://api.anthropic.com/v1"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "app:rag-service",
+      "dependsOn": [
+        "dataset:policy-corpus",
+        "model:claude-3-5-sonnet",
+        "prompt:app/qa.py:13:answer_prompt",
+        "provider:anthropic",
+        "tool:search_policies"
+      ]
+    },
+    {
+      "ref": "model:claude-3-5-sonnet",
+      "dependsOn": [
+        "prompt:app/qa.py:13:answer_prompt"
+      ]
+    },
+    {
+      "ref": "tool:search_policies",
+      "dependsOn": []
+    }
+  ],
+  "compositions": [
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "model:claude-3-5-sonnet"
+      ]
+    },
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "prompt:app/qa.py:13:answer_prompt"
+      ]
+    },
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "tool:search_policies"
+      ]
+    },
+    {
+      "aggregate": "complete",
+      "assemblies": [
+        "provider:anthropic"
+      ]
+    },
+    {
+      "aggregate": "unknown",
+      "assemblies": [
+        "dataset:policy-corpus"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "aibom:rules_version",
+      "value": "2026.09.1"
+    },
+    {
+      "name": "aibom:tool_version",
+      "value": "aibom 0.1.0"
+    },
+    {
+      "name": "aibom:source_root",
+      "value": "."
+    },
+    {
+      "name": "aibom:review_notes",
+      "value": "warning:model.floating, warning:system.no_human_oversight"
+    }
+  ]
+}
