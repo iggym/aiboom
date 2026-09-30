@@ -35,7 +35,7 @@
       "type": "application",
       "bom-ref": "app:support-agent",
       "name": "support-agent",
-      "version": "e26f46b-dirty",
+      "version": "<git>",
       "description": "Customer support assistant that drafts and sends replies.",
       "authors": [
         {

@@ -35,7 +35,7 @@
       "type": "application",
       "bom-ref": "app:mcp-heavy",
       "name": "mcp-heavy",
-      "version": "0.9.0",
+      "version": "<git>",
       "description": "Research agent wired to many MCP servers.",
       "authors": [
         {
